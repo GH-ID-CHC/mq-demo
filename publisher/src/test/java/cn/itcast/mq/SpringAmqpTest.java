@@ -4,16 +4,20 @@ package cn.itcast.mq;
  * Date: 2023/12/27
  */
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.concurrent.ListenableFutureCallback;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @program: mq-demo
@@ -22,6 +26,7 @@ import java.util.Map;
  **/
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@Slf4j
 public class SpringAmqpTest {
 
     @Autowired
@@ -91,6 +96,36 @@ public class SpringAmqpTest {
         msg.put("age", 21);
         // 发送消息
         rabbitTemplate.convertAndSend("object.queue", msg);
+    }
+
+    /**
+     * 生产者确认模式
+     *
+     * @throws InterruptedException 中断异常
+     */
+    @Test
+    public void testPublisherConfirm() throws InterruptedException {
+        CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());
+        correlationData.getFuture().addCallback(new ListenableFutureCallback<CorrelationData.Confirm>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                log.error("handle message ack fail", throwable);
+            }
+
+            @Override
+            public void onSuccess(CorrelationData.Confirm confirm) {
+                log.debug("收到消息回执信息");
+                if (confirm.isAck()) {
+                    log.debug("消息发送成功！收到ack");
+                } else {
+                    log.error("消息发送失败,收到nack,原因：{}",confirm.getReason());
+                }
+            }
+        });
+        rabbitTemplate.convertAndSend("hmall.direct", "red", "hello", correlationData);
+
+        //测试附加:接收消息回执的需要进行等待
+        Thread.sleep(2000);
     }
 
 }

@@ -1,6 +1,8 @@
 logging:
   pattern:
     dateformat: MM-dd HH:mm:ss:SSS
+  level:
+    cn.itcast: debug
 spring:
   rabbitmq:
     host: 192.168.114.128
@@ -8,3 +10,11 @@ spring:
     virtual-host: /hmall  #虚拟主机名称
     username: hmall     #用户名
     password: 123        #密码
+    connection-timeout: 1s
+    template:
+      retry:
+        enabled: true # 开启消息重试
+        initial-interval: 1000ms
+        multiplier: 1
+    publisher-confirm-type: correlated
+    publisher-returns: true
