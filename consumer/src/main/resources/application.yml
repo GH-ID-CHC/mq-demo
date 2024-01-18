@@ -11,3 +11,4 @@ spring:
     listener:
       direct:
         prefetch: 1 # 每次只能获取一条消息，需要处理完成在处理下一条
+        acknowledge-mode: auto
