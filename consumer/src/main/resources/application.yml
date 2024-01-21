@@ -9,6 +9,8 @@ spring:
     username: hmall     #用户名
     password: 123        #密码
     listener:
-      direct:
+      simple:
         prefetch: 1 # 每次只能获取一条消息，需要处理完成在处理下一条
         acknowledge-mode: auto
+        retry:
+          enabled: true  #消费者重试机制

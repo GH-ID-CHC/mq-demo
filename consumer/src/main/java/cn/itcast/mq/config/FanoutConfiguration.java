@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * 声明交换机与队列
+ * 如果需要多个交换机需要声明多个文件
  * @program: mq-demo
  * @author:
  * @create: 2024-01-08 22:26

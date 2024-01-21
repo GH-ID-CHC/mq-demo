@@ -37,6 +37,7 @@ public class MqListner {
     @RabbitListener(queues = "fanout.queue1")
     public void listenFanoutQueue1(String msg) {
         System.out.println("消费者1接收到Fanout消息：【" + msg + "】");
+        throw new RuntimeException("失败");
     }
 
     @RabbitListener(queues = "fanout.queue2")
