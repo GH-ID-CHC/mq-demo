@@ -4,6 +4,7 @@ package cn.itcast.mq.listners;
  * Date: 2023/12/27
  */
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.ExchangeTypes;
 import org.springframework.amqp.rabbit.annotation.*;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,7 @@ import java.util.Map;
  * @create: 2023-12-27 22:37
  */
 @Component
+@Slf4j
 public class MqListner {
 
 
@@ -94,6 +96,20 @@ public class MqListner {
         System.out.println("消费者接收到object.queue消息：【" + msg + "】");
     }
 
+
+    /**
+     * 接收延时消息
+     *
+     * @param msg 味精
+     */
+    @RabbitListener(bindings = @QueueBinding(
+            value = @Queue(name = "delay.queue",durable = "true"),
+            exchange = @Exchange(name = "delay.direct",delayed = "true"),
+            key = {"delay"}
+    ))
+    public void listenDelayMessage(String msg){
+        log.debug("消费者接收到delay.queue延迟消息：【" + msg + "】");
+    }
 
 
 }

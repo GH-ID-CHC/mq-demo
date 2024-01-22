@@ -7,6 +7,9 @@ package cn.itcast.mq;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.amqp.AmqpException;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,6 +129,22 @@ public class SpringAmqpTest {
 
         //测试附加:接收消息回执的需要进行等待
         Thread.sleep(2000);
+    }
+
+    /**
+     * 发送延迟消息
+     */
+    @Test
+    public void testSendDelayMessage() {
+        String message="hello delay";
+        rabbitTemplate.convertAndSend("delay.direct", "delay", message, new MessagePostProcessor() {
+            @Override
+            public Message postProcessMessage(Message message) throws AmqpException {
+//                设置延迟1秒
+                message.getMessageProperties().setDelay(10000);
+                return message;
+            }
+        });
     }
 
 }
